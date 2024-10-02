@@ -14,5 +14,7 @@ export class AppComponent {
         //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         //Add 'implements OnInit' to the class.
         this.title = 'front-end-pre-commit-test';
+
+        const a = 0;
     }
 }
