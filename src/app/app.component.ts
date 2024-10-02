@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { testModel } from './shared/app.model';
 
 @Component({
     selector: 'app-root',
