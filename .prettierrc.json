@@ -54,5 +54,7 @@
                 "parser": "html"
             }
         }
-    ]
+    ],
+    "plugins": ["prettier-plugin-organize-imports"],
+    "organizeImports": true
 }
