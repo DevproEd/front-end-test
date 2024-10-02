@@ -11,12 +11,8 @@ import { RouterOutlet } from '@angular/router';
 export class AppComponent {
     title = 'front-end-test';
     ngOnInit(): void {
-        //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-        //Add 'implements OnInit' to the class.
         this.title = 'front-end-pre-commit-test';
-
-        const a = 0;
-        const b = 1;
-        const c = a + b;
+        // 1. 並將source code format 以及 import 排序、移除未使用import 加入pre-commit hook 中
+        // 2. 新增vs code 寫作風格設定檔案 .vscode\settings.json
     }
 }
