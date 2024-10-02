@@ -16,5 +16,6 @@ export class AppComponent {
         this.title = 'front-end-pre-commit-test';
 
         const a = 0;
+        const b = 1;
     }
 }
