@@ -38,7 +38,7 @@ jobs:
                     echo "Base date: $BASE_DATE"
                   else
                     echo "Not a valid release branch. Exiting."
-                    exit 1   # 若來源分支不符合格式，退出流程
+                    exit 0   # 若來源分支不符合格式，退出流程
                   fi
 
             # 嘗試將 develop 分支合併到所有日期比 base_date 晚的 release 分支中
