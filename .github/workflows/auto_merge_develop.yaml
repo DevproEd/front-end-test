@@ -44,6 +44,9 @@ jobs:
             # 嘗試將 develop 分支合併到所有日期比 base_date 晚的 release 分支中
             - name: Merge develop into future release branches
               run: |
+                  # 確保拉取所有遠端分支
+                  git fetch --all
+
                   # 獲取所有 release/ 開頭的遠端分支名稱
                   RELEASE_BRANCHES=$(git branch -r | grep 'origin/release/' | sed 's/origin\///')
 
