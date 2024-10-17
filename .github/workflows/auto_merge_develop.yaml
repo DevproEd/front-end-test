@@ -47,6 +47,10 @@ jobs:
                   # 獲取所有 release/ 開頭的遠端分支名稱
                   RELEASE_BRANCHES=$(git branch -r | grep 'origin/release/' | sed 's/origin\///')
 
+                  # 打印出 RELEASE_BRANCHES 的內容，用於調試
+                  echo "Found release branches:"
+                  echo "$RELEASE_BRANCHES"
+
                   # 遍歷所有 release 分支，並將 develop 合併到日期較晚的分支
                   for BRANCH in $RELEASE_BRANCHES; do
                     # 提取 release 分支的日期部分
