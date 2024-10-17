@@ -2,88 +2,88 @@ name: Auto Merge Develop to Future Release Branches
 
 # 工作流程會在 PR 被合併到 develop 分支後觸發
 on:
-  pull_request:
-    types:
-      - closed      # 只在 PR 被關閉（合併）的情況下觸發
-    branches:
-      - develop     # 僅當 PR 是合併到 develop 分支時觸發
+    pull_request:
+        types:
+            - closed # 只在 PR 被關閉（合併）的情況下觸發
+        branches:
+            - develop # 僅當 PR 是合併到 develop 分支時觸發
 
 jobs:
-  merge:
-    # 只有當 PR 已被合併時（而不是單純關閉）才會執行
-    if: github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
+    merge:
+        # 只有當 PR 已被合併時（而不是單純關閉）才會執行
+        if: github.event.pull_request.merged == true
+        runs-on: ubuntu-latest
 
-    steps:
-      # 檢出當前的代碼，這是必要步驟，否則無法操作 Git
-      - name: Checkout code
-        uses: actions/checkout@v4
+        steps:
+            # 檢出當前的代碼，這是必要步驟，否則無法操作 Git
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-      # 設置 Git 使用者配置，GitHub Actions 需要以一個虛擬使用者進行 Git 操作
-      - name: Set up Git
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
+            # 設置 Git 使用者配置，GitHub Actions 需要以一個虛擬使用者進行 Git 操作
+            - name: Set up Git
+              run: |
+                  git config --global user.name "GitHub Actions"
+                  git config --global user.email "actions@github.com"
 
-      # 從合併的 PR 分支名稱中提取 base_date，即 release/yyyymmdd 的日期部分
-      - name: Get base_date from merged branch
-        run: |
-          # 取得 PR 的來源分支名稱，例如 release/20241021
-          SOURCE_BRANCH=$(echo "${{ github.event.pull_request.head.ref }}")
+            # 從合併的 PR 分支名稱中提取 base_date，即 release/yyyymmdd 的日期部分
+            - name: Get base_date from merged branch
+              run: |
+                  # 取得 PR 的來源分支名稱，例如 release/20241021
+                  SOURCE_BRANCH=$(echo "${{ github.event.pull_request.head.ref }}")
 
-          # 確認來源分支是否符合 release/yyyymmdd 格式
-          if [[ "$SOURCE_BRANCH" =~ release/[0-9]{8} ]]; then
-            # 提取 yyyymmdd 作為 base_date
-            BASE_DATE=$(echo "$SOURCE_BRANCH" | sed 's/release\///')
-            echo "Base date: $BASE_DATE"
-          else
-            echo "Not a valid release branch. Exiting."
-            exit 1   # 若來源分支不符合格式，退出流程
-          fi
+                  # 確認來源分支是否符合 release/yyyymmdd 格式
+                  if [[ "$SOURCE_BRANCH" =~ release/[0-9]{8} ]]; then
+                    # 提取 yyyymmdd 作為 base_date
+                    BASE_DATE=$(echo "$SOURCE_BRANCH" | sed 's/release\///')
+                    echo "Base date: $BASE_DATE"
+                  else
+                    echo "Not a valid release branch. Exiting."
+                    exit 1   # 若來源分支不符合格式，退出流程
+                  fi
 
-      # 嘗試將 develop 分支合併到所有日期比 base_date 晚的 release 分支中
-      - name: Merge develop into future release branches
-        run: |
-          # 獲取所有 release/ 開頭的遠端分支名稱
-          RELEASE_BRANCHES=$(git branch -r | grep 'origin/release/' | sed 's/origin\///')
+            # 嘗試將 develop 分支合併到所有日期比 base_date 晚的 release 分支中
+            - name: Merge develop into future release branches
+              run: |
+                  # 獲取所有 release/ 開頭的遠端分支名稱
+                  RELEASE_BRANCHES=$(git branch -r | grep 'origin/release/' | sed 's/origin\///')
 
-          # 遍歷所有 release 分支，並將 develop 合併到日期較晚的分支
-          for BRANCH in $RELEASE_BRANCHES; do
-            # 提取 release 分支的日期部分
-            RELEASE_DATE=$(echo $BRANCH | sed 's/release\///')
+                  # 遍歷所有 release 分支，並將 develop 合併到日期較晚的分支
+                  for BRANCH in $RELEASE_BRANCHES; do
+                    # 提取 release 分支的日期部分
+                    RELEASE_DATE=$(echo $BRANCH | sed 's/release\///')
 
-            # 只對比 base_date 晚的分支進行合併
-            if [[ "$RELEASE_DATE" > "$BASE_DATE" ]]; then
-              echo "Merging develop into $BRANCH"
+                    # 只對比 base_date 晚的分支進行合併
+                    if [[ "$RELEASE_DATE" > "$BASE_DATE" ]]; then
+                      echo "Merging develop into $BRANCH"
 
-              # 切換到該 release 分支
-              git checkout $BRANCH
+                      # 切換到該 release 分支
+                      git checkout $BRANCH
 
-              # 拉取最新變更，確保代碼是最新的
-              git pull origin $BRANCH
+                      # 拉取最新變更，確保代碼是最新的
+                      git pull origin $BRANCH
 
-              # 嘗試將 develop 分支合併進去，如果發生衝突，退出並標記為失敗
-              git merge develop || { echo "Merge conflict occurred"; exit 1; }
+                      # 嘗試將 develop 分支合併進去，如果發生衝突，退出並標記為失敗
+                      git merge develop || { echo "Merge conflict occurred"; exit 1; }
 
-              # 如果合併成功，推送變更到遠端
-              git push origin $BRANCH
-            fi
-          done
+                      # 如果合併成功，推送變更到遠端
+                      git push origin $BRANCH
+                    fi
+                  done
 
-      # 如果合併過程中發生錯誤或衝突，這一步將被執行
-      # 通過 GitHub API 在原始 PR 中發表評論，通知發 PR 的人
-      - name: Notify PR author of merge conflict
-        if: failure()   # 這一步只有在前面的步驟失敗時才會執行
-        uses: actions/github-script@v6
-        with:
-          script: |
-            # 獲取 PR 的作者，即發 PR 的 GitHub 使用者名稱
-            const prAuthor = context.payload.pull_request.user.login;
+            # 如果合併過程中發生錯誤或衝突，這一步將被執行
+            # 通過 GitHub API 在原始 PR 中發表評論，通知發 PR 的人
+            - name: Notify PR author of merge conflict
+              if: failure() # 這一步只有在前面的步驟失敗時才會執行
+              uses: actions/github-script@v6
+              with:
+                  script: |
+                      # 獲取 PR 的作者，即發 PR 的 GitHub 使用者名稱
+                      const prAuthor = context.payload.pull_request.user.login;
 
-            # 創建一個評論，通知 PR 作者合併衝突
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `@${prAuthor}, a merge conflict occurred while merging develop into a release branch. Please resolve the conflict manually.`
-            });
+                      # 創建一個評論，通知 PR 作者合併衝突
+                      github.issues.createComment({
+                        issue_number: context.issue.number,
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        body: `@${prAuthor}, a merge conflict occurred while merging develop into a release branch. Please resolve the conflict manually.`
+                      });
