@@ -52,6 +52,12 @@ jobs:
                     # 提取 release 分支的日期部分
                     RELEASE_DATE=$(echo $BRANCH | sed 's/release\///')
 
+                    # 驗證日期是否合法
+                    if ! date -d "$RELEASE_DATE" >/dev/null 2>&1; then
+                    echo "Invalid date format in branch: $BRANCH"
+                    continue  # 跳過無效日期的分支，並繼續下個日期1
+                    fi
+
                     # 只對比 base_date 晚的分支進行合併
                     if [[ "$RELEASE_DATE" > "$BASE_DATE" ]]; then
                       echo "Merging develop into $BRANCH"
