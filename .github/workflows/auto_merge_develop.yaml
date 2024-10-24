@@ -123,6 +123,9 @@ jobs:
                     fi
                   done
 
+            - name: Set branch environment variable
+              run: echo "BRANCH=${{ github.ref }}" >> $GITHUB_ENV
+
             # 如果合併過程中發生錯誤或衝突，這一步將被執行
             # 通過 GitHub API 在原始 PR 中發表評論，通知發 PR 的人
             - name: Notify PR author of merge conflict
@@ -130,15 +133,16 @@ jobs:
               uses: actions/github-script@v6
               with:
                   script: |
-                      # 獲取 PR 的作者，即發 PR 的 GitHub 使用者名稱
+                      // 獲取 PR 的作者，即發 PR 的 GitHub 使用者名稱
                       const prAuthor = context.payload.pull_request.user.login;
-                      # 取得當前的分支名稱
+
+                      // 取得當前的分支名稱
                       const branchName = process.env.BRANCH;
 
-                      # 創建一個評論，通知 PR 作者合併衝突
+                      // 創建一個評論，通知 PR 作者合併衝突
                       github.issues.createComment({
-                        issue_number: context.issue.number,
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                        body: `@${prAuthor}, a merge conflict occurred while merging develop into ${branchName}. Please resolve the conflict manually`
+                          issue_number: context.issue.number,
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          body: `@${prAuthor}, a merge conflict occurred while merging develop into ${branchName}. Please resolve the conflict manually.`
                       });
