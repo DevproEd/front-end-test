@@ -151,5 +151,5 @@ jobs:
                         issue_number: context.issue.number,
                         owner: context.repo.owner,
                         repo: context.repo.repo,
-                        body: `@${prAuthor}, a merge conflict occurred while merging develop into ${branchName}. Please resolve the conflict manually.`
+                        body: `@${prAuthor},執行自動merge時發生錯誤，錯誤情況：Merging develop into ${branchName}。請人工介入查看。`
                       });
