@@ -59,6 +59,36 @@ jobs:
                   echo "Found release branches:"
                   echo "$RELEASE_BRANCHES"
 
+                  # 定義一個函數來驗證日期
+                      is_valid_date() {
+                      local DATE=$1
+                      local YEAR=${DATE:0:4}
+                      local MONTH=${DATE:4:2}
+                      local DAY=${DATE:6:2}
+
+                  # 檢查年份、月份、日期是否是有效的數字範圍
+                    if ! [[ "$YEAR" =~ ^[0-9]{4}$ ]] || ! [[ "$MONTH" =~ ^(0[1-9]|1[0-2])$ ]] || ! [[ "$DAY" =~ ^(0[1-9]|[12][0-9]|3[01])$ ]]; then
+                    return 1
+                    fi
+
+                    # 檢查月份和天數的合理性
+                    if [[ "$MONTH" == "04" || "$MONTH" == "06" || "$MONTH" == "09" || "$MONTH" == "11" ]]; then
+                        # 4月、6月、9月、11月最多30天
+                        if [[ "$DAY" -gt 30 ]]; then return 1; fi
+                    elif [[ "$MONTH" == "02" ]]; then
+                        # 檢查閏年和2月天數
+                        if (( (YEAR % 4 == 0 && YEAR % 100 != 0) || YEAR % 400 == 0 )); then
+                        # 閏年2月有29天
+                        if [[ "$DAY" -gt 29 ]]; then return 1; fi
+                        else
+                        # 非閏年2月有28天
+                        if [[ "$DAY" -gt 28 ]]; then return 1; fi
+                        fi
+                    fi
+
+                    return 0  # 合法日期
+                    }
+
                   # 遍歷所有 release 分支，並將 develop 合併到日期較晚的分支
                   for BRANCH in $RELEASE_BRANCHES; do
                     # 提取 release 分支的日期部分
@@ -67,11 +97,12 @@ jobs:
                     BASE_DATE_TIMESTAMP=$(date -d "$BASE_DATE" +%s)
                     RELEASE_DATE_TIMESTAMP=$(date -d "$RELEASE_DATE" +%s)
 
-                    # 驗證日期是否合法
-                    if ! date -d "$RELEASE_DATE" >/dev/null 2>&1; then
-                    echo "Invalid date format in branch: $BRANCH"
-                    continue  # 跳過無效日期的分支，並繼續下個日期1
-                    fi
+                    # 先驗證日期是否合法
+                        if ! is_valid_date "$RELEASE_DATE"; then
+                            echo "Invalid date format in branch: $BRANCH"
+                            continue  # 跳過無效日期的分支
+                        fi
+
 
                     # 只對比 base_date 晚的分支進行合併
                     if [[ "$RELEASE_DATE_TIMESTAMP" -gt "$BASE_DATE_TIMESTAMP" ]]; then
@@ -92,6 +123,9 @@ jobs:
                     fi
                   done
 
+            - name: Set branch environment variable
+              run: echo "BRANCH=${{ github.ref }}" >> $GITHUB_ENV
+
             # 如果合併過程中發生錯誤或衝突，這一步將被執行
             # 通過 GitHub API 在原始 PR 中發表評論，通知發 PR 的人
             - name: Notify PR author of merge conflict
@@ -99,15 +133,16 @@ jobs:
               uses: actions/github-script@v6
               with:
                   script: |
-                      # 獲取 PR 的作者，即發 PR 的 GitHub 使用者名稱
+                      // 獲取 PR 的作者，即發 PR 的 GitHub 使用者名稱
                       const prAuthor = context.payload.pull_request.user.login;
-                      # 取得當前的分支名稱
+
+                      // 取得當前的分支名稱
                       const branchName = process.env.BRANCH;
 
-                      # 創建一個評論，通知 PR 作者合併衝突
+                      // 創建一個評論，通知 PR 作者合併衝突
                       github.issues.createComment({
-                        issue_number: context.issue.number,
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                        body: `@${prAuthor}, a merge conflict occurred while merging develop into ${branchName}. Please resolve the conflict manually`
+                          issue_number: context.issue.number,
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          body: `@${prAuthor}, a merge conflict occurred while merging develop into ${branchName}. Please resolve the conflict manually.`
                       });
