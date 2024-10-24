@@ -1,5 +1,10 @@
 name: Auto Merge Develop to Future Release Branches
 
+permissions:
+    issues: write # 给 `issues` 相关操作写入权限
+    pull-requests: write # 给 `pull-requests` 相关操作写入权限
+    contents: write # 给内容相关操作写入权限
+
 # 工作流程會在 PR 被合併到 develop 分支後觸發
 on:
     pull_request:
