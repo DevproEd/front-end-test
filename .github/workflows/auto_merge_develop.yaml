@@ -140,9 +140,9 @@ jobs:
                       const branchName = process.env.BRANCH;
 
                       // 創建一個評論，通知 PR 作者合併衝突
-                      github.issues.createComment({
-                          issue_number: context.issue.number,
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          body: `@${prAuthor}, a merge conflict occurred while merging develop into ${branchName}. Please resolve the conflict manually.`
+                      await github.rest.issues.createComment({
+                        issue_number: context.issue.number,
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        body: `@${prAuthor}, a merge conflict occurred while merging develop into ${branchName}. Please resolve the conflict manually.`
                       });
