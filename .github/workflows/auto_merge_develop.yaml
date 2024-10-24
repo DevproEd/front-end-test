@@ -25,6 +25,11 @@ jobs:
                   git config --global user.name "GitHub Actions"
                   git config --global user.email "actions@github.com"
 
+            # 配置遠端URL使用 GITHUB_TOKEN，確保在推送代碼時授權
+            - name: Set up authentication
+              run: |
+                  git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+
             # 從合併的 PR 分支名稱中提取 base_date，即 release/yyyymmdd 的日期部分
             - name: Get base_date from merged branch
               run: |
@@ -44,13 +49,23 @@ jobs:
             # 嘗試將 develop 分支合併到所有日期比 base_date 晚的 release 分支中
             - name: Merge develop into future release branches
               run: |
+                  # 確保拉取所有遠端分支
+                  git fetch --all
+
                   # 獲取所有 release/ 開頭的遠端分支名稱
                   RELEASE_BRANCHES=$(git branch -r | grep 'origin/release/' | sed 's/origin\///')
+
+                  # 打印出 RELEASE_BRANCHES 的內容，用於調試
+                  echo "Found release branches:"
+                  echo "$RELEASE_BRANCHES"
 
                   # 遍歷所有 release 分支，並將 develop 合併到日期較晚的分支
                   for BRANCH in $RELEASE_BRANCHES; do
                     # 提取 release 分支的日期部分
                     RELEASE_DATE=$(echo $BRANCH | sed 's/release\///')
+
+                    BASE_DATE_TIMESTAMP=$(date -d "$BASE_DATE" +%s)
+                    RELEASE_DATE_TIMESTAMP=$(date -d "$RELEASE_DATE" +%s)
 
                     # 驗證日期是否合法
                     if ! date -d "$RELEASE_DATE" >/dev/null 2>&1; then
@@ -59,20 +74,21 @@ jobs:
                     fi
 
                     # 只對比 base_date 晚的分支進行合併
-                    if [[ "$RELEASE_DATE" > "$BASE_DATE" ]]; then
+                    if [[ "$RELEASE_DATE_TIMESTAMP" -gt "$BASE_DATE_TIMESTAMP" ]]; then
                       echo "Merging develop into $BRANCH"
 
                       # 切換到該 release 分支
                       git checkout $BRANCH
 
                       # 拉取最新變更，確保代碼是最新的
-                      git pull origin $BRANCH
+                      git pull origin $BRANCH || { echo "Failed to pull from $BRANCH"; exit 1; }
 
                       # 嘗試將 develop 分支合併進去，如果發生衝突，退出並標記為失敗
                       git merge develop || { echo "Merge conflict occurred"; exit 1; }
 
                       # 如果合併成功，推送變更到遠端
-                      git push origin $BRANCH
+                      git push origin $BRANCH || { echo "Failed to push to $BRANCH"; exit 1; }
+
                     fi
                   done
 
@@ -85,11 +101,13 @@ jobs:
                   script: |
                       # 獲取 PR 的作者，即發 PR 的 GitHub 使用者名稱
                       const prAuthor = context.payload.pull_request.user.login;
+                      # 取得當前的分支名稱
+                      const branchName = process.env.BRANCH;
 
                       # 創建一個評論，通知 PR 作者合併衝突
                       github.issues.createComment({
                         issue_number: context.issue.number,
                         owner: context.repo.owner,
                         repo: context.repo.repo,
-                        body: `@${prAuthor}, a merge conflict occurred while merging develop into a release branch. Please resolve the conflict manually.`
+                        body: `@${prAuthor}, a merge conflict occurred while merging develop into ${branchName}. Please resolve the conflict manually`
                       });
