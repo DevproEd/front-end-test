@@ -100,14 +100,14 @@ jobs:
                     RELEASE_DATE=$(echo $BRANCH | sed 's/release\///')
 
                     BASE_DATE_TIMESTAMP=$(date -d "$BASE_DATE" +%s)
-                    RELEASE_DATE_TIMESTAMP=$(date -d "$RELEASE_DATE" +%s)
 
                     # 先驗證日期是否合法
-                        if ! is_valid_date "$RELEASE_DATE"; then
-                            echo "Invalid date format in branch: $BRANCH"
-                            continue  # 跳過無效日期的分支
-                        fi
+                    if ! is_valid_date "$RELEASE_DATE"; then
+                      echo "Invalid date format in branch: $BRANCH. Skipping this branch."
+                      continue  # 跳過無效日期的分支
+                    fi
 
+                    RELEASE_DATE_TIMESTAMP=$(date -d "$RELEASE_DATE" +%s)
 
                     # 只對比 base_date 晚的分支進行合併
                     if [[ "$RELEASE_DATE_TIMESTAMP" -gt "$BASE_DATE_TIMESTAMP" ]]; then
@@ -120,11 +120,13 @@ jobs:
                       git pull origin $BRANCH || { echo "Failed to pull from $BRANCH"; exit 1; }
 
                       # 嘗試將 develop 分支合併進去，如果發生衝突，退出並標記為失敗
-                      git merge develop || { echo "Merge conflict occurred"; exit 1; }
+                      if ! git merge develop; then
+                        echo "Merge conflict occurred in $BRANCH. Please resolve manually."
+                        continue  # 繼續下一個分支，而不是退出
+                      fi
 
                       # 如果合併成功，推送變更到遠端
                       git push origin $BRANCH || { echo "Failed to push to $BRANCH"; exit 1; }
-
                     fi
                   done
 
