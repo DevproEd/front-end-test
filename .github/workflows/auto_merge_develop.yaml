@@ -120,7 +120,7 @@ jobs:
                       git pull origin $BRANCH || { echo "Failed to pull from $BRANCH"; exit 1; }
 
                       # 嘗試將 develop 分支合併進去，如果發生衝突，退出並標記為失敗
-                      if ! git merge develop --allow-unrelated-histories; then
+                      if ! git merge develop; then
                         echo "Merge conflict occurred in $BRANCH. Please resolve manually."
                         exit 1
                       fi
@@ -152,4 +152,5 @@ jobs:
                         owner: context.repo.owner,
                         repo: context.repo.repo,
                         body: `@${prAuthor},執行自動merge時發生錯誤，錯誤情況：Merging develop into ${branchName}。請人工介入查看。`
-                      });
+
+                        });
