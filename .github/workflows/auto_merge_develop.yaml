@@ -23,6 +23,8 @@ jobs:
             # 檢出當前的代碼，這是必要步驟，否則無法操作 Git
             - name: Checkout code
               uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
             # 設置 Git 使用者配置，GitHub Actions 需要以一個虛擬使用者進行 Git 操作
             - name: Set up Git
