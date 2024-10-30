@@ -1,2 +1,3 @@
 #!/bin/sh
+. "$(dirname "$0")/husky.sh"  # 確保 Husky 正確運行
 npx lint-staged
