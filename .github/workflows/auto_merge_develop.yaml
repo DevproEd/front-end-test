@@ -2,14 +2,16 @@ name: Auto Merge Develop to Future Release Branches
 
 permissions:
     issues: write # 给 `issues` 相關操作寫入權限
+    pull-requests: write # 给 `pull-requests` 相關操作寫入權限
+    contents: write # 给内容相關操作寫入權限
 
 # 工作流程會在 PR 被合併到 develop 分支後觸發
 on:
     pull_request:
-        branches:
-            - develop # 僅當 PR 是合併到 develop 分支時觸發
         types:
             - closed # 只在 PR 被關閉（合併）的情況下觸發
+        branches:
+            - develop # 僅當 PR 是合併到 develop 分支時觸發
 
 jobs:
     merge:
