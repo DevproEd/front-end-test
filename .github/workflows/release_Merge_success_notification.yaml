@@ -35,13 +35,13 @@ jobs:
                   # Optional (recommended) mail server password:
                   password: ${{secrets.MAIL_PASSWORD}}
                   # Required mail subject:
-                  subject: Github Actions job result
+                  subject: Github Actions Send Mail Test
                   # Required recipients' addresses:
                   to: ed.lin@devpro.com.tw
                   # Required sender full name (address can be skipped):
-                  from: Ed.Lin # <user@example.com>
+                  from: notifications@github.com # <user@example.com>
                   # Optional plain body:
-                  body: Build job of ${{github.repository}} completed successfully!
+                  body: 專案 ${{github.repository}} ${{github.ref}}已上線，感謝該專案開發人員，並請確認下次上線功能是否有環境可以佈版測試。
                   # Optional carbon copy recipients:
                   cc: ed.lin@devpro.com.tw
                   # Optional blind carbon copy recipients:
