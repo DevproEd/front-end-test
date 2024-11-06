@@ -23,7 +23,7 @@ jobs:
                   #
                   #  * smtp://user:password@server:port
                   #  * smtp+starttls://user:password@server:port
-                  connection_url: smtp+starttls://jayhan0905@gmail.com:lgzunepluqstkpul@smtp.gmail.com:465
+                  connection_url: ${{secrets.MAIL_CONNECTION}}
                   # Required mail server address if not connection_url:
                   server_address: smtp.gmail.com
                   # Server port, default 25:
@@ -31,9 +31,9 @@ jobs:
                   # Optional whether this connection use TLS (default is true if server_port is 465)
                   secure: true
                   # Optional (recommended) mail server username:
-                  username: jayhan0905@gmail.com
+                  username: ${{secrets.MAIL_USERNAME}}
                   # Optional (recommended) mail server password:
-                  password: lgzunepluqstkpul
+                  password: ${{secrets.MAIL_PASSWORD}}
                   # Required mail subject:
                   subject: Github Actions Send Mail Test
                   # Required recipients' addresses:
