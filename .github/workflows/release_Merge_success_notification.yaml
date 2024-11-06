@@ -13,17 +13,52 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
-
-            - name: Send Email Notification
+            - name: Send mail
               uses: dawidd6/action-send-mail@v3
               with:
+                  # Specify connection via URL (replaces server_address, server_port, secure,
+                  # username and password)
+                  #
+                  # Format:
+                  #
+                  #  * smtp://user:password@server:port
+                  #  * smtp+starttls://user:password@server:port
+                  connection_url: smtp+starttls://jayhan0905@gmail.com:lgzu nepl uqst kpul@smtp.gmail.com:465
+                  # Required mail server address if not connection_url:
                   server_address: smtp.gmail.com
+                  # Server port, default 25:
                   server_port: 465
-                  username: ${{ secrets.SMTP_USERNAME }}
-                  password: ${{ secrets.SMTP_PASSWORD }}
-                  subject: 'GitHub Actions test Notification'
-                  body: 'The latest build was successful.'
-                  to: ${{ env.EMAIL_RECIPIENTS }}
-                  from: 'noreply@example.com'
+                  # Optional whether this connection use TLS (default is true if server_port is 465)
+                  secure: true
+                  # Optional (recommended) mail server username:
+                  username: ${{secrets.MAIL_USERNAME}}
+                  # Optional (recommended) mail server password:
+                  password: ${{secrets.MAIL_PASSWORD}}
+                  # Required mail subject:
+                  subject: Github Actions job result
+                  # Required recipients' addresses:
+                  to: ed.lin@devpro.com.tw
+                  # Required sender full name (address can be skipped):
+                  from: Luke Skywalker # <user@example.com>
+                  # Optional plain body:
+                  body: Build job of ${{github.repository}} completed successfully!
+                  # Optional HTML body read from file:
+                  html_body: file://README.html
+                  # Optional carbon copy recipients:
+                  cc: ed.lin@devpro.com.tw
+                  # Optional blind carbon copy recipients:
+                  bcc: ed.lin@devpro.com.tw
+                  # Optional recipient of the email response:
+                  reply_to: ed.lin@devpro.com.tw
+                  # Optional unsigned/invalid certificates allowance:
+                  ignore_cert: true
+                  # Optional converting Markdown to HTML (set content_type to text/html too):
+                  convert_markdown: true
+                  # Optional attachments:
+                  attachments: attachments.zip,git.diff,./dist/static/*.js
+                  # Optional priority: 'high', 'normal' (default) or 'low'
+                  priority: low
+                  # Optional nodemailerlog: true/false
+                  nodemailerlog: false
+                  # Optional nodemailerdebug: true/false if true lognodem will also be set true
+                  nodemailerdebug: false
