@@ -42,14 +42,9 @@
     "pretty-quick": "^4.0.0",
     "typescript": "~5.4.2"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "src/**/*.{ts,js}": [
-      "prettier --write --plugin prettier-plugin-organize-imports"
-    ]
-  }
+ "lint-staged": {
+  "src/**/*.{ts,js}": [
+    "prettier --write --plugin prettier-plugin-organize-imports"
+  ]
+}
 }
