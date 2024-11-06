@@ -5,9 +5,6 @@ on:
         branches:
             - develop
 
-env:
-    EMAIL_RECIPIENTS: 'jayhan0905@gmail.com,ed.lin@devpro.com.tw'
-
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -26,7 +23,7 @@ jobs:
                   #
                   #  * smtp://user:password@server:port
                   #  * smtp+starttls://user:password@server:port
-                  connection_url: smtp+starttls://jayhan0905@gmail.com:lgzu nepl uqst kpul@smtp.gmail.com:465
+                  connection_url: smtp+starttls://jayhan0905@gmail.com:lgzunepluqstkpul@smtp.gmail.com:465
                   # Required mail server address if not connection_url:
                   server_address: smtp.gmail.com
                   # Server port, default 25:
