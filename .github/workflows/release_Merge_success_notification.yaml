@@ -5,14 +5,14 @@ on:
         branches:
             - develop
 
+env:
+    EMAIL_RECIPIENTS: 'ed.lin@devpro.com.tw,user@example.com'
+
 jobs:
     build:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
-
             - name: Send mail
               uses: dawidd6/action-send-mail@v3
               with:
@@ -35,14 +35,10 @@ jobs:
                   # Optional (recommended) mail server password:
                   password: ${{secrets.MAIL_PASSWORD}}
                   # Required mail subject:
-                  subject: Github Actions Send Mail Test
+                  subject: release分支PR合併成功通知
                   # Required recipients' addresses:
-                  to: ed.lin@devpro.com.tw
+                  to: ${{ env.EMAIL_RECIPIENTS }}
                   # Required sender full name (address can be skipped):
                   from: notifications@github.com # <user@example.com>
                   # Optional plain body:
-                  body: 專案 ${{github.repository}} ${{github.ref}}已上線，感謝該專案開發人員，並請確認下次上線功能是否有環境可以佈版測試。
-                  # Optional carbon copy recipients:
-                  cc: ed.lin@devpro.com.tw
-                  # Optional blind carbon copy recipients:
-                  bcc: ed.lin@devpro.com.tw
+                  body: 專案 ${{github.repository}} ${{github.ref_name}}已上線，感謝該專案開發人員，並請確認下次上線功能是否有環境可以佈版測試。
