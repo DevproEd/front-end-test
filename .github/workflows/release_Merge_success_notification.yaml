@@ -1,0 +1,29 @@
+name: release merge success notification
+
+on:
+    push:
+        branches:
+            - develop
+
+env:
+    EMAIL_RECIPIENTS: 'jayhan0905@gmail.com,ed.lin@devpro.com.tw'
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Send Email Notification
+              uses: dawidd6/action-send-mail@v3
+              with:
+                  server_address: ${{ secrets.SMTP_SERVER_ADDRESS }}
+                  server_port: 587
+                  username: ${{ secrets.SMTP_USERNAME }}
+                  password: ${{ secrets.SMTP_PASSWORD }}
+                  subject: 'GitHub Actions test Notification'
+                  body: 'The latest build was successful.'
+                  to: ${{ env.EMAIL_RECIPIENTS }}
+                  from: 'noreply@example.com'
