@@ -17,7 +17,8 @@ jobs:
             - name: Send Notification to Power Automate
               run: |
                   curl -X POST -H "Content-Type: application/json" -d '{
-                      "title": "原生寫法測試",
+                  "type": "message",
+                  "title": "原生寫法測試",
                       "attachments": [
                       {
                           "contentType": "application/vnd.microsoft.card.adaptive",
