@@ -1,0 +1,49 @@
+name: release merge success notification through MS Teams
+# 工作流程會在 PR 被合併到 develop 分支後觸發
+on:
+    pull_request:
+        types:
+            - closed # 只在 PR 被關閉（合併）的情況下觸發
+        branches:
+            - develop # 僅當 PR 是合併到 develop 分支時觸發
+jobs:
+    merge:
+        name: Microsoft Teams Notification
+        if: github.event.pull_request.merged == true
+        runs-on: ubuntu-latest
+        env:
+            TEAMS_WEBHOOK_URL: '${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }}'
+        steps:
+            - name: Send Notification to Power Automate
+              run: |
+                  curl -X POST -H "Content-Type: application/json" -d '{
+                  "attachments": [
+                       {
+                    "contentType": "application/vnd.microsoft.card.adaptive",
+                    "content": {
+                        "type": "AdaptiveCard",
+                        "body": [
+                            {
+                                "type": "TextBlock",
+                                "text": "開發項目正式上線通知"
+                            },
+                            {
+                                "type": "TextBlock",
+                                "text": "專案: ${{ github.repository }}",
+                                "wrap": true
+                            },
+                            {
+                                "type": "TextBlock",
+                                "text": "分支: ${{ github.ref_name }}",
+                                "wrap": true
+                            },
+                            {
+                                "type": "TextBlock",
+                                "text": "已上線，感謝開發人員，並請相關開發人員確認下次上線功能是否有環境可以佈版測試。",
+                                "wrap": true
+                            }
+                        ]
+                    }
+                        }
+                  ]
+                     }' $TEAMS_WEBHOOK_URL
