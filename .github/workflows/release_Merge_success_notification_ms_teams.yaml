@@ -8,7 +8,7 @@ on:
 jobs:
     push:
         name: Microsoft Teams Notification
-        if: github.event.pull_request.merged == true
+        if: always()
         runs-on: ubuntu-latest
         steps:
             - name: Send Notification to Power Automate
