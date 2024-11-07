@@ -10,6 +10,8 @@ jobs:
         name: Microsoft Teams Notification
         if: always()
         runs-on: ubuntu-latest
+        env:
+            TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }}
         steps:
             - name: Send Notification to Power Automate
               run: |
@@ -30,4 +32,4 @@ jobs:
                           }
                       }
                       ]
-                  }' ${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }}
+                  }' $TEAMS_WEBHOOK_URL
