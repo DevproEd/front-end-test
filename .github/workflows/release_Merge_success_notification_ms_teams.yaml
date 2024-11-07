@@ -16,21 +16,24 @@ jobs:
         steps:
             - name: Send Notification to Power Automate
               run: |
-                  curl -X POST -H "Content-Type: application/json" -d '{
-                    "type": "message",
-                    "title": "原生寫法測試",
-                    "attachments": [
-                      {
-                        "contentType": "application/vnd.microsoft.card.adaptive",
-                        "content": {
-                          "type": "AdaptiveCard",
-                          "body": [
-                            {
-                              "type": "TextBlock",
-                              "text": "專案: ${{ github.repository }} 分支: ${{ github.ref_name }} 已上線，感謝該專案開發人員，並請確認下次上線功能是否有環境可以佈版測試。"
+                  curl -X POST \
+                    -H "Content-Type: application/json" \
+                    -H "Authorization: Bearer ${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }}" \
+                    -d '{
+                        "type": "message",
+                        "title": "原生寫法測試",
+                        "attachments": [
+                        {
+                            "contentType": "application/vnd.microsoft.card.adaptive",
+                            "content": {
+                            "type": "AdaptiveCard",
+                            "body": [
+                                {
+                                "type": "TextBlock",
+                                "text": "專案: ${{ github.repository }} 分支: ${{ github.ref_name }} 已上線，感謝該專案開發人員，並請確認下次上線功能是否有環境可以佈版測試。"
+                                }
+                            ]
                             }
-                          ]
                         }
-                      }
-                    ]
-                  }' ${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }}
+                        ]
+                    }' ${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }}
