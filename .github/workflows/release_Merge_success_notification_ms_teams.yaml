@@ -16,8 +16,10 @@ jobs:
 
         steps:
             - name: send notification to MS Teams
-              uses: neonidian/teams-notify-build-status@v3
-              with:
-                  webhookUrl: ${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }} # Secret name is "TEAMS_INCOMING_WEBHOOK_URL"
-                  title: Tests
-                  message: 專案 ${{github.repository}} ${{github.ref_name}}已上線，感謝該專案開發人員，並請確認下次上線功能是否有環境可以佈版測試。
+              env:
+                  TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }} # 在 GitHub Secrets 中添加你的 Webhook URL
+              run: |
+                  curl -H 'Content-Type: application/json' -d '{
+                   "title": "GitHub Action Notification Test",
+                   "text": "專案:${{github.repository}}分支:${{github.ref_name}}已上線，感謝該專案開發人員，並請確認下次上線功能是否有環境可以佈版測試。"
+                  }' $TEAMS_WEBHOOK_URL
