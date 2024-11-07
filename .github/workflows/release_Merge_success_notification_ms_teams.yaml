@@ -1,0 +1,26 @@
+name: release merge success notification through MS Teams
+
+# 工作流程會在 PR 被合併到 develop 分支後觸發
+on:
+    pull_request:
+        types:
+            - closed # 只在 PR 被關閉（合併）的情況下觸發
+        branches:
+            - develop # 僅當 PR 是合併到 develop 分支時觸發
+
+env:
+    EMAIL_RECIPIENTS: 'ed.lin@devpro.com.tw,user@example.com'
+
+jobs:
+    merge:
+        # 只有當 PR 已被合併時（而不是單純關閉）才會執行
+        if: github.event.pull_request.merged == true
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: send notification to MS Teams
+              uses: neonidian/teams-notify-build-status@v3
+              with:
+                  webhookUrl: ${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }} # Secret name is "TEAMS_INCOMING_WEBHOOK_URL"
+                  title: Tests
+                  message: 專案 ${{github.repository}} ${{github.ref_name}}已上線，感謝該專案開發人員，並請確認下次上線功能是否有環境可以佈版測試。
