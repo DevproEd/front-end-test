@@ -10,34 +10,13 @@ on:
 
 jobs:
     merge:
-        # 只有當 PR 已被合併時（而不是單純關閉）才會執行
-        if: github.event.pull_request.merged == true
         name: Microsoft Teams Notification
         runs-on: ubuntu-latest
+        # 只有當 PR 已被合併時（而不是單純關閉）才會執行
+        if: github.event.pull_request.merged == true
         steps:
-            - uses: actions/checkout@v4
-            - name: Microsoft Teams Notification
-              uses: skitionek/notify-microsoft-teams@master
+            - uses: neonidian/teams-notify-build-status@v3
               with:
-                  webhook_url: ${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }}
-                  raw: >-
-                      {
-                         "type": "message",
-                         "attachments":
-                         [
-                             {
-                                 "contentType": "application/vnd.microsoft.card.adaptive",
-                                 "content":
-                                 {
-                                     "type": "AdaptiveCard",
-                                     "body":
-                                     [
-                                         {
-                                             "type": "TextBlock",
-                                             "text": "專案:${{github.repository}}分支:${{github.ref_name}}已上線，感謝該專案開發人員，並請確認下次上線功能是否有環境可以佈版測試。"
-                                         }
-                                     ]
-                                 }
-                             }
-                         ]
-                      }
+                  title: teams-notify-build-status v3 test
+                  webhookUrl: ${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }}
+                  message: '專案:${{github.repository}}分支:${{github.ref_name}}已上線，感謝該專案開發人員，並請確認下次上線功能是否有環境可以佈版測試。'
