@@ -20,7 +20,21 @@ jobs:
                   -d '{
                     "@type": "MessageCard",
                     "@context": "http://schema.org/extensions",
-                  "summary": "PR Merge Notification",
-                  "themeColor": "0078D7",
-                  "text": "專案: ${{ github.repository }} 分支: ${{ github.ref_name }} 已上線，感謝該專案開發人員，並請確認下次上線功能是否有環境可以佈版測試。"
-                   }' ${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }}
+                    "themeColor": "0076D7",
+                    "summary": "PR 合併通知",
+                    "sections": [{
+                      "activityTitle": "PR 合併通知",
+                      "activitySubtitle": "專案資訊",
+                      "facts": [
+                        {
+                          "name": "專案名稱",
+                          "value": "${{ github.repository }}"
+                        },
+                        {
+                          "name": "分支",
+                          "value": "${{ github.ref_name }}"
+                        }
+                      ],
+                      "text": "已上線，感謝該專案開發人員，並請確認下次上線功能是否有環境可以佈版測試。"
+                    }]
+                  }' ${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }}
