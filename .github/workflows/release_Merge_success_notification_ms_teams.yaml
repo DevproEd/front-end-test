@@ -12,11 +12,24 @@ jobs:
     merge:
         name: Microsoft Teams Notification
         runs-on: ubuntu-latest
-        # 只有當 PR 已被合併時（而不是單純關閉）才會執行
         if: github.event.pull_request.merged == true
         steps:
-            - uses: neonidian/teams-notify-build-status@v3
-              with:
-                  title: teams-notify-build-status v3 test
-                  webhookUrl: ${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }}
-                  message: '專案:${{github.repository}}分支:${{github.ref_name}}已上線，感謝該專案開發人員，並請確認下次上線功能是否有環境可以佈版測試。'
+            - name: Send Notification to Power Automate
+              run: |
+                  curl -X POST -H "Content-Type: application/json" -d '{
+                    "title": "原生寫法測試",
+                    "attachments": [
+                      {
+                        "contentType": "application/vnd.microsoft.card.adaptive",
+                        "content": {
+                          "type": "AdaptiveCard",
+                          "body": [
+                            {
+                              "type": "TextBlock",
+                              "text": "專案:${{github.repository}}分支:${{github.ref_name}}已上線，感謝該專案開發人員，並請確認下次上線功能是否有環境可以佈版測試。"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }' ${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }}
