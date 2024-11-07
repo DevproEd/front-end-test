@@ -15,7 +15,7 @@ jobs:
         name: Microsoft Teams Notification
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@master
+            - uses: actions/checkout@v4
             - name: Microsoft Teams Notification
               uses: skitionek/notify-microsoft-teams@master
               with:
