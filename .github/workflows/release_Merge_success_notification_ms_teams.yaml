@@ -1,39 +1,36 @@
 name: release merge success notification through MS Teams
-
 on:
     push:
         branches:
             - feature/ms_teams_通知
-
 jobs:
     push:
         name: Microsoft Teams Notification
         if: always()
         runs-on: ubuntu-latest
         env:
-            TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }}
+            TEAMS_WEBHOOK_URL: '${{ secrets.TEAMS_INCOMING_WEBHOOK_URL }}'
         steps:
             - name: Send Notification to Power Automate
               run: |
                   curl -X POST -H "Content-Type: application/json" -d '{
                   "attachments": [
-                      {
-                          "contentType": "application/vnd.microsoft.card.adaptive",
-                          "content": {
-                          "type": "AdaptiveCard",
-                          "body": [
-                              {
-                              "type": "TextBlock",
-                              "text": "開發項目正式上線通知"
-                              },
-                              {
+                       {
+                    "contentType": "application/vnd.microsoft.card.adaptive",
+                    "content": {
+                        "type": "AdaptiveCard",
+                        "body": [
+                            {
+                                "type": "TextBlock",
+                                "text": "開發項目正式上線通知"
+                            },
+                            {
                                 "type": "TextBlock",
                                 "text": "專案: ${{ github.repository }} 分支: ${{ github.ref_name }} 已上線，感謝該專案開發人員，並請確認下次上線功能是否有環境可以佈版測試。",
                                 "wrap": true
                             }
-                            ],
-                          ]
-                          }
-                      }
-                      ]
-                  }' $TEAMS_WEBHOOK_URL
+                        ]
+                    }
+                        }
+                  ]
+                     }' $TEAMS_WEBHOOK_URL
