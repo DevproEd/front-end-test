@@ -8,9 +8,6 @@ on:
         branches:
             - develop # 僅當 PR 是合併到 develop 分支時觸發
 
-env:
-    EMAIL_RECIPIENTS: 'ed.lin@devpro.com.tw,user@example.com'
-
 jobs:
     merge:
         # 只有當 PR 已被合併時（而不是單純關閉）才會執行
