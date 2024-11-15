@@ -41,10 +41,10 @@ jobs:
               run: |
                   git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
 
-            # 從合併的 PR 分支名稱中提取 base_date，即 release/yyyymmdd 的日期部分
-            - name: Get base_date from merged branch
+            # 嘗試將 develop 分支合併到所有日期比 base_date 晚的 release 分支中
+            - name: Merge develop into future release branches
               run: |
-                  # 取得 PR 的來源分支名稱，例如 release/20241021
+                  # 取得 PR 的來源分支名稱中提取 base_date，即 release/yyyymmdd 的日期部分
                   SOURCE_BRANCH=$(echo "${{ github.event.pull_request.head.ref }}")
 
                   # 確認來源分支是否符合 release/yyyymmdd 格式
@@ -52,16 +52,13 @@ jobs:
                     # 提取 yyyymmdd 作為 base_date
                     BASE_DATE=$(echo "$SOURCE_BRANCH" | sed 's/release\///')
                     BASE_DATE_TIMESTAMP=$(date -d "$BASE_DATE" +%s)
-                    echo "Base date timestamp: $BASE_DATE_TIMESTAMP"
                     echo "Base date: $BASE_DATE"
+                    echo "Base date timestamp: $BASE_DATE_TIMESTAMP"
                   else
                     echo "Not a valid release branch. Exiting."
                     exit 0   # 若來源分支不符合格式，退出流程
                   fi
 
-            # 嘗試將 develop 分支合併到所有日期比 base_date 晚的 release 分支中
-            - name: Merge develop into future release branches
-              run: |
                   # 確保拉取所有遠端分支
                   git fetch --all
 
@@ -101,10 +98,6 @@ jobs:
 
                     return 0  # 合法日期
                     }
-
-                  # 取得base_date的timestamp
-                  BASE_DATE_TIMESTAMP=$(date -d "$BASE_DATE" +%s)
-                  echo "Base date timestamp: $BASE_DATE_TIMESTAMP"
 
                   # 遍歷所有 release 分支，並將 develop 合併到日期較晚的分支
                   for BRANCH in $RELEASE_BRANCHES; do
