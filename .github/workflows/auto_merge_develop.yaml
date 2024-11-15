@@ -115,6 +115,7 @@ jobs:
                     fi
 
                     RELEASE_DATE_TIMESTAMP=$(date -d "$RELEASE_DATE" +%s)
+                    echo "Release date timestamp: $RELEASE_DATE_TIMESTAMP"
 
                     # 只對比 base_date 晚的分支進行合併
                     if [[ "$RELEASE_DATE_TIMESTAMP" -gt "$BASE_DATE_TIMESTAMP" ]]; then
