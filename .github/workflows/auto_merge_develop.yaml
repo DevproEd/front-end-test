@@ -133,6 +133,10 @@ jobs:
 
                       # 如果合併成功，推送變更到遠端
                       git push origin $BRANCH || { echo "Failed to push to $BRANCH"; exit 1; }
+
+                    else
+                      # 如果日期較早，則打印分支名稱
+                      echo "Branch $BRANCH has a release date earlier than base date $BASE_DATE. Skipping this branch."
                     fi
                   done
 
