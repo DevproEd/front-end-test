@@ -51,6 +51,8 @@ jobs:
                   if [[ "$SOURCE_BRANCH" =~ release/[0-9]{8} ]]; then
                     # 提取 yyyymmdd 作為 base_date
                     BASE_DATE=$(echo "$SOURCE_BRANCH" | sed 's/release\///')
+                    BASE_DATE_TIMESTAMP=$(date -d "$SOURCE_BRANCH" +%s)
+                    echo "Base date timestamp: $BASE_DATE_TIMESTAMP"
                     echo "Base date: $BASE_DATE"
                   else
                     echo "Not a valid release branch. Exiting."
