@@ -1,3 +1,7 @@
+# release分支合併進develop分支後自動加tag
+# v1.0 create by Ed.Lin Date:2024/11/14
+# v1.1 update by Ed.Lin Date:2024/11/15 - 新增檢核是否為release分支
+
 name: Auto add Tag to Develop Branches
 
 permissions:
@@ -34,6 +38,15 @@ jobs:
             - name: Set up authentication
               run: |
                   git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+
+            # 檢查是否為release分支，不是則結束
+            - name : Check branch name startwith release/,if not skip all step without error
+              run: |
+                  BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+                  if [[ "$BRANCH_NAME" != release/* ]]; then
+                      echo "Not a release branch, skipping tag creation"
+                      exit 0
+                  fi
 
             # 從分支名稱中提取發布日期
             - name: Extract release date from branch name
