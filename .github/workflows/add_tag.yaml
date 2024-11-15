@@ -20,7 +20,7 @@ on:
 jobs:
     merge:
         # 只有當 PR 已被合併時（而不是單純關閉）才會執行
-        if: github.event.pull_request.merged == true
+        if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/')
         runs-on: ubuntu-latest
 
         steps:
@@ -38,15 +38,6 @@ jobs:
             - name: Set up authentication
               run: |
                   git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-
-            # 檢查是否為release分支，不是則結束
-            - name : Check branch name startwith release/,if not skip all step without error
-              run: |
-                  BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
-                  if [[ "$BRANCH_NAME" != release/* ]]; then
-                      echo "Not a release branch, skipping tag creation"
-                      exit 0
-                  fi
 
             # 從分支名稱中提取發布日期
             - name: Extract release date from branch name
