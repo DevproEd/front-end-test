@@ -1,6 +1,6 @@
 # release分支合併進develop分支後,將最新版develop分支合併進release分支
 # v1.0 create by Ed.Lin Date:2024/11/1
-# v1.1 update by Ed.Lin Date:2024/11/15 - 新增檢核是否為release分支
+# v1.1 update by Ed.Lin Date:2024/11/15 - 新增檢核是否為release分支,修正base data提取錯誤問題
 
 name: Auto Merge Develop to Future Release Branches
 
@@ -101,6 +101,7 @@ jobs:
 
                   # 遍歷所有 release 分支，並將 develop 合併到日期較晚的分支
                   for BRANCH in $RELEASE_BRANCHES; do
+                    echo checking branch: $BRANCH
                     # 提取 release 分支的日期部分
                     RELEASE_DATE=$(echo $BRANCH | sed 's/release\///')
 
