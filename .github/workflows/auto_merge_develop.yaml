@@ -106,6 +106,7 @@ jobs:
                     RELEASE_DATE=$(echo $BRANCH | sed 's/release\///')
 
                     BASE_DATE_TIMESTAMP=$(date -d "$BASE_DATE" +%s)
+                    echo "Base date timestamp: $BASE_DATE_TIMESTAMP"
 
                     # 先驗證日期是否合法
                     if ! is_valid_date "$RELEASE_DATE"; then
