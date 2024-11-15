@@ -1,4 +1,8 @@
-name: release merge success notification
+# release分支合併進develop分支後,透過Gmail發送通知信件給開發人員
+# v1.0 create by Ed.Lin Date:2024/11/1
+# v1.1 update by Ed.Lin Date:2024/11/15 - 新增檢核是否為release分支,並新增收件人
+
+name: release merge success notification through Gmail
 
 # 工作流程會在 PR 被合併到 develop 分支後觸發
 on:
@@ -9,12 +13,12 @@ on:
             - develop # 僅當 PR 是合併到 develop 分支時觸發
 
 env:
-    EMAIL_RECIPIENTS: 'ed.lin@devpro.com.tw,user@example.com'
+    EMAIL_RECIPIENTS: 'ed.lin@devpro.com.tw,kent.kuo@devpro.com.tw,jingheng.lin@devpro.com.tw,jason.cai@devpro.com.tw,owen.wang@devpro.com.tw,ben.huang@devpro.com.tw'
 
 jobs:
     merge:
         # 只有當 PR 已被合併時（而不是單純關閉）才會執行
-        if: github.event.pull_request.merged == true
+        if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/')
         runs-on: ubuntu-latest
 
         steps:
