@@ -1,6 +1,7 @@
 # release分支合併進develop分支後,透過微軟 teams 聊天通知開發人員
 # v1.0 create by Ed.Lin Date:2024/11/1
 # v1.1 update by Ed.Lin Date:2024/11/15 - 新增檢核是否為release分支
+# v1.2 update by Ed.Lin Date:2024/11/19 - 調整分支名稱來源為github.event.pull_request.head.ref
 
 name: release merge success notification through MS Teams chat
 # 工作流程會在 PR 被合併到 develop 分支後觸發
@@ -38,7 +39,7 @@ jobs:
                             },
                             {
                                 "type": "TextBlock",
-                                "text": "分支: ${{ github.ref_name }}",
+                                "text": "分支: ${{ github.event.pull_request.head.ref }}",
                                 "wrap": true
                             },
                             {
