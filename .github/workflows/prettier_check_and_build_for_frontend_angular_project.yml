@@ -1,4 +1,4 @@
-name: prettier-check and build
+name: prettier-check and build for frontend Angular project
 
 on:
     pull_request:
