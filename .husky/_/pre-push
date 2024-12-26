@@ -22,12 +22,21 @@
 
 # Check branch name
 # version 1.0 edited by Ed.lin 2024/11/5
+# version 1.1 edited by Ed.lin 2024/12/26 -add release/YYYYMMDD check, YYYYMMDD cannot be less than today.
 branch_name=$(git rev-parse --abbrev-ref HEAD)
 
 if [[ "$branch_name" == "develop" ]] ||
    [[ "$branch_name" =~ ^feature/[^/]+$ ]] ||
    [[ "$branch_name" =~ ^fix/[^/]+$ ]] ||
    [[ "$branch_name" =~ ^release/[0-9]{8}$ ]]; then
+  if [[ "$branch_name" =~ ^release/([0-9]{8})$ ]]; then
+    release_date=${BASH_REMATCH[1]}
+    current_date=$(date +%Y%m%d)
+    if [[ "$release_date" -lt "$current_date" ]]; then
+      echo "Invalid release date. The date in 'release/YYYYMMDD' cannot be less than today's date."
+      exit 1
+    fi
+  fi
   echo "Branch name is valid"
   exit 0
 else
